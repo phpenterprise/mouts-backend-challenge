@@ -46,6 +46,55 @@ These business rules define quantity-based discounting tiers and limitations:
    - Maximum limit: 20 items per product
    - No discounts allowed for quantities below 4 items
 
+## Implementation
+
+The backend implementation is available in [`template/backend`](./template/backend) and follows the template's layered architecture:
+
+- Domain: `Sale` aggregate and `SaleItem` business rules.
+- Application: MediatR commands and handlers for sale workflows, plus Rebus in-memory event publishing.
+- Infrastructure: EF Core mappings, migrations, and repository implementation.
+- WebApi: REST endpoints for CRUD and cancellation operations.
+
+### Running locally
+
+From `template/backend`, run:
+
+```bash
+docker compose up -d ambev.developerevaluation.database ambev.developerevaluation.nosql ambev.developerevaluation.cache
+dotnet restore
+dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM --startup-project src/Ambev.DeveloperEvaluation.WebApi
+dotnet run --project src/Ambev.DeveloperEvaluation.WebApi
+```
+
+Swagger is enabled in development at `/swagger`.
+
+### Tests
+
+From `template/backend`, run:
+
+```bash
+dotnet test Ambev.DeveloperEvaluation.sln
+```
+
+### Sales API
+
+- `POST /api/sales`: create a sale.
+- `GET /api/sales`: list sales with pagination, filters, and ordering.
+- `GET /api/sales/{id}`: retrieve one sale.
+- `PUT /api/sales/{id}`: update a sale.
+- `PATCH /api/sales/{id}/cancel`: cancel a sale and all items.
+- `PATCH /api/sales/{id}/items/{itemId}/cancel`: cancel a single sale item.
+- `DELETE /api/sales/{id}`: delete a sale.
+
+Manual test examples are available in [Sales API](./.doc/sales-api.md) and [Tests](./TESTS.md).
+
+Discounts are calculated automatically from item quantity:
+
+- 1-3 identical items: no discount.
+- 4-9 identical items: 10% discount.
+- 10-20 identical items: 20% discount.
+- Above 20 identical items: rejected.
+
 ## Overview
 This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
 
