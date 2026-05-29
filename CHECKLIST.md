@@ -43,7 +43,7 @@ Este checklist consolida os principais requisitos do desafio e onde eles foram a
 | NSubstitute | Cumprido | `CreateSaleHandlerTests` | Mock de repositório e publisher. |
 | Testes manuais documentados | Cumprido | `TESTS.md` | Fluxo de validação via API. |
 | README com execução | Cumprido | `README.md` | Run, migrations, testes e endpoints. |
-| Gitignore de arquivos locais | Cumprido | `.gitignore` | `.DS_Store`, `.codex/`, `.claude/`. |
+| Gitignore de arquivos locais | Cumprido | `.gitignore` | `.DS_Store`
 
 ## Pontos para validação local
 
