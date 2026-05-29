@@ -6,6 +6,7 @@ using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -33,7 +34,7 @@ public class SalesController : BaseController
     {
         var validationResult = await new SaleRequestValidator<CreateSaleRequest>().ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
+            return ValidationFailure(validationResult.Errors);
 
         var result = await _mediator.Send(new CreateSaleCommand(
             request.SaleNumber,
@@ -44,7 +45,7 @@ public class SalesController : BaseController
             request.BranchName,
             ToInputItems(request.Items)), cancellationToken);
 
-        return Created(string.Empty, new ApiResponseWithData<SaleResult>
+        return new CreatedResult(string.Empty, new ApiResponseWithData<SaleResult>
         {
             Success = true,
             Message = "Sale created successfully",
@@ -59,7 +60,7 @@ public class SalesController : BaseController
     {
         var result = await _mediator.Send(new GetSaleCommand(id), cancellationToken);
 
-        return Ok(new ApiResponseWithData<SaleResult>
+        return new OkObjectResult(new ApiResponseWithData<SaleResult>
         {
             Success = true,
             Message = "Sale retrieved successfully",
@@ -83,7 +84,7 @@ public class SalesController : BaseController
             new ListSalesCommand(page, size, saleNumber, customerId, branchId, isCancelled, orderBy),
             cancellationToken);
 
-        return Ok(new PaginatedResponse<SaleResult>
+        return new OkObjectResult(new PaginatedResponse<SaleResult>
         {
             Success = true,
             Message = "Sales retrieved successfully",
@@ -105,7 +106,7 @@ public class SalesController : BaseController
     {
         var validationResult = await new SaleRequestValidator<UpdateSaleRequest>().ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
+            return ValidationFailure(validationResult.Errors);
 
         var result = await _mediator.Send(new UpdateSaleCommand(
             id,
@@ -117,7 +118,7 @@ public class SalesController : BaseController
             request.BranchName,
             ToInputItems(request.Items)), cancellationToken);
 
-        return Ok(new ApiResponseWithData<SaleResult>
+        return new OkObjectResult(new ApiResponseWithData<SaleResult>
         {
             Success = true,
             Message = "Sale updated successfully",
@@ -132,7 +133,7 @@ public class SalesController : BaseController
     {
         var result = await _mediator.Send(new CancelSaleCommand(id), cancellationToken);
 
-        return Ok(new ApiResponseWithData<SaleResult>
+        return new OkObjectResult(new ApiResponseWithData<SaleResult>
         {
             Success = true,
             Message = "Sale cancelled successfully",
@@ -150,7 +151,7 @@ public class SalesController : BaseController
     {
         var result = await _mediator.Send(new CancelSaleItemCommand(id, itemId), cancellationToken);
 
-        return Ok(new ApiResponseWithData<SaleResult>
+        return new OkObjectResult(new ApiResponseWithData<SaleResult>
         {
             Success = true,
             Message = "Sale item cancelled successfully",
@@ -165,7 +166,7 @@ public class SalesController : BaseController
     {
         await _mediator.Send(new DeleteSaleCommand(id), cancellationToken);
 
-        return Ok(new ApiResponse
+        return new OkObjectResult(new ApiResponse
         {
             Success = true,
             Message = "Sale deleted successfully"
@@ -177,5 +178,15 @@ public class SalesController : BaseController
         return items
             .Select(item => new SaleInputItem(item.ProductId, item.ProductName, item.Quantity, item.UnitPrice))
             .ToList();
+    }
+
+    private static IActionResult ValidationFailure(IEnumerable<FluentValidation.Results.ValidationFailure> errors)
+    {
+        return new BadRequestObjectResult(new ApiResponse
+        {
+            Success = false,
+            Message = "Validation Failed",
+            Errors = errors.Select(error => (ValidationErrorDetail)error)
+        });
     }
 }

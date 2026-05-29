@@ -36,6 +36,8 @@ Este checklist consolida os principais requisitos do desafio e onde eles foram a
 | Filtros | Cumprido | `SaleRepository.ApplyFilters` | `saleNumber`, `customerId`, `branchId`, `isCancelled`. |
 | Ordenação | Cumprido | `SaleRepository.ApplySorting` | `saleDate`, `saleNumber`, `totalAmount` asc/desc. |
 | Consultas sem tracking | Cumprido | `AsNoTracking` na listagem | Evita tracking em leitura. |
+| Swagger com endpoints expostos | Cumprido | `.doc/evidence/swagger-ui.png` | Evidencia visual dos endpoints de Auth, Sales e Users. |
+| Resposta padrao na raiz da API | Cumprido | `GET /` | Retorna JSON com status, Swagger e health check. |
 | xUnit | Cumprido | `SaleTests`, `CreateSaleHandlerTests` | Testes unitários. |
 | Bogus/Faker | Cumprido | `CreateSaleHandlerTests` | Geração de massa de dados. |
 | NSubstitute | Cumprido | `CreateSaleHandlerTests` | Mock de repositório e publisher. |

@@ -66,7 +66,13 @@ dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM --startup-
 dotnet run --project src/Ambev.DeveloperEvaluation.WebApi
 ```
 
-Swagger is enabled in development at `/swagger`.
+Swagger is enabled in development at `/swagger`. The API root (`/`) returns a small JSON status payload with links to Swagger and health check.
+
+### Delivery evidence
+
+Swagger UI with the implemented sales endpoints:
+
+![Swagger UI](./.doc/evidence/swagger-ui.png)
 
 ### Tests
 

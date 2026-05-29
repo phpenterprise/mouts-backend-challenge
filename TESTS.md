@@ -33,6 +33,27 @@ Com ambiente `Development`, o Swagger fica disponivel em:
 /swagger
 ```
 
+Evidencia visual:
+
+![Swagger UI](./.doc/evidence/swagger-ui.png)
+
+A raiz da API tambem pode ser usada para uma checagem rapida:
+
+```http
+GET /
+```
+
+Resposta esperada:
+
+```json
+{
+  "service": "Ambev.DeveloperEvaluation.WebApi",
+  "status": "running",
+  "documentation": "/swagger",
+  "health": "/health"
+}
+```
+
 ## 4. Rodar testes automatizados
 
 Execute a partir de `template/backend`:

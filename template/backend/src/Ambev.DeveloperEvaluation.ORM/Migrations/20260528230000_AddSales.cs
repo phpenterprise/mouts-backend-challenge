@@ -1,4 +1,6 @@
 using System;
+using Ambev.DeveloperEvaluation.ORM;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,6 +8,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(DefaultContext))]
+    [Migration("20260528230000_AddSales")]
     public partial class AddSales : Migration
     {
         /// <inheritdoc />

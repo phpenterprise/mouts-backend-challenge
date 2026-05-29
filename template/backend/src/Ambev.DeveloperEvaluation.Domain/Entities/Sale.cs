@@ -105,15 +105,41 @@ public class Sale : BaseEntity
         string branchName)
     {
         SaleNumber = saleNumber.Trim();
-        SaleDate = saleDate;
+        SaleDate = saleDate.Kind == DateTimeKind.Utc
+            ? saleDate
+            : saleDate.ToUniversalTime();
         Customer = new ExternalIdentity(customerId, customerName);
         Branch = new ExternalIdentity(branchId, branchName);
     }
 
     private void ReplaceItems(IEnumerable<SaleItem> items)
     {
-        _items.Clear();
-        _items.AddRange(items);
+        var requestedItems = items.ToList();
+        var duplicatedProduct = requestedItems
+            .GroupBy(item => item.ProductId)
+            .FirstOrDefault(group => group.Count() > 1);
+
+        if (duplicatedProduct is not null)
+            throw new DomainException("Sale cannot contain duplicated products");
+
+        _items.RemoveAll(item => requestedItems.All(requested => requested.ProductId != item.ProductId));
+
+        foreach (var requestedItem in requestedItems)
+        {
+            var currentItem = _items.FirstOrDefault(item => item.ProductId == requestedItem.ProductId);
+
+            if (currentItem is null)
+            {
+                _items.Add(requestedItem);
+                continue;
+            }
+
+            currentItem.Update(
+                requestedItem.ProductId,
+                requestedItem.ProductName,
+                requestedItem.Quantity,
+                requestedItem.UnitPrice);
+        }
 
         var validation = Validate();
         if (!validation.IsValid)
